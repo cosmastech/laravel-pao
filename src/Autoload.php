@@ -53,11 +53,14 @@ register_shutdown_function(function (): void {
             fn (string $line): bool => $line !== ''
                 && ! preg_match('/^[.st!]+$/', $line)
                 && ! preg_match('/^(Tests:|Duration:|Parallel:|Time:|Generating code coverage)\s/', $line)
+                && ! preg_match('/^(INFO\s+)?No tests found\.?$/i', $line)
                 && ! str_ends_with($line, 'by Sebastian Bergmann and contributors.'),
         ));
 
         if ($lines !== []) {
-            $result['raw'] = $lines;
+            $existing = is_array($result['raw'] ?? null) ? array_values($result['raw']) : [];
+
+            $result['raw'] = [...$existing, ...$lines];
         }
     }
 

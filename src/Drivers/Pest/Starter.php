@@ -34,6 +34,7 @@ final class Starter extends BaseStarter
 
         if (in_array('--parallel', $argv, true)) {
             ProfileCollector::startTimerFromNanoseconds(hrtime(true));
+            ProfileCollector::executionStarted();
         } else {
             $this->registerProfileSubscriber();
         }
