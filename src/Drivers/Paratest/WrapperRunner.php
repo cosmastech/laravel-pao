@@ -71,6 +71,7 @@ final readonly class WrapperRunner implements RunnerInterface
         $r->getMethod('waitForAllToFinish')->invoke($runner);
 
         ProfileCollector::startTimerFromNanoseconds($startTime);
+        ProfileCollector::executionStarted();
 
         /** @var list<SplFileInfo> $testResultFiles */
         $testResultFiles = $r->getProperty('testResultFiles')->getValue($runner);

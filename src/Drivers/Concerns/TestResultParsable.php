@@ -18,6 +18,7 @@ use PHPUnit\Event\TestRunner\ExecutionStartedSubscriber;
 use PHPUnit\TestRunner\TestResult\Facade as TestResultFacade;
 use PHPUnit\TestRunner\TestResult\Issues\Issue;
 use PHPUnit\TestRunner\TestResult\TestResult;
+use PHPUnit\TextUI\Configuration\Registry as ConfigurationRegistry;
 
 /**
  * @internal
@@ -125,6 +126,8 @@ trait TestResultParsable
         $notices = $testResult->numberOfNotices();
         $risky = $testResult->numberOfTestsWithTestConsideredRiskyEvents();
         $ignoredByBaseline = $testResult->numberOfIssuesIgnoredByBaseline();
+        $hasNoTests = $tests === 0;
+        $noTestsFoundAndFailsOnEmpty = $hasNoTests && $this->failsOnEmptyTestSuite();
 
         $durationMs = ProfileCollector::durationMs();
 
@@ -172,12 +175,16 @@ trait TestResultParsable
 
         /** @var array<string, mixed> $result */
         $result = [
-            'result' => $testResult->wasSuccessful() ? 'passed' : 'failed',
+            'result' => $testResult->wasSuccessful() && ! $noTestsFoundAndFailsOnEmpty ? 'passed' : 'failed',
             'tests' => $tests,
             'passed' => $tests - $failedCount - $erroredCount - $skipped,
             'assertions' => $assertions,
             'duration_ms' => $durationMs,
         ];
+
+        if ($hasNoTests) {
+            $result['raw'] = ['No tests found.'];
+        }
 
         if ($failedCount > 0) {
             $result['failed'] = $failedCount;
@@ -241,6 +248,15 @@ trait TestResultParsable
         }
 
         return $result;
+    }
+
+    private function failsOnEmptyTestSuite(): bool
+    {
+        try {
+            return ConfigurationRegistry::get()->failOnEmptyTestSuite();
+        } catch (\Throwable) {
+            return true;
+        }
     }
 
     /**
