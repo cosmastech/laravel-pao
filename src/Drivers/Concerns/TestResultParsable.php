@@ -9,6 +9,7 @@ use PHPUnit\Event\Code\TestMethod;
 use PHPUnit\Event\Code\Throwable;
 use PHPUnit\Event\Facade as EventFacade;
 use PHPUnit\Event\Test\Errored;
+use PHPUnit\Event\Test\Failed;
 use PHPUnit\Event\Test\Finished;
 use PHPUnit\Event\Test\FinishedSubscriber;
 use PHPUnit\Event\Test\Prepared;
@@ -135,16 +136,30 @@ trait TestResultParsable
         $failureDetails = [];
 
         foreach ($testResult->testFailedEvents() as $event) {
-            $test = $event->test();
             $throwable = $event->throwable();
             $message = trim($throwable->description());
-            $file = $test->file();
-            $line = $test instanceof TestMethod ? $test->line() : 0;
 
-            [$file, $line] = $this->resolveTestLocation($file, $line, $throwable);
+            if ($event instanceof Failed) {
+                $test = $event->test();
+                $file = $test->file();
+                $line = $test instanceof TestMethod ? $test->line() : 0;
+
+                [$file, $line] = $this->resolveTestLocation($file, $line, $throwable);
+
+                $failureDetails[] = [
+                    'test' => $test instanceof TestMethod ? $test->nameWithClass() : $test->id(),
+                    'file' => $file,
+                    'line' => $line,
+                    'message' => $message,
+                ];
+
+                continue;
+            }
+
+            [$file, $line] = $this->resolveTestLocation('', 0, $throwable);
 
             $failureDetails[] = [
-                'test' => $test instanceof TestMethod ? $test->nameWithClass() : $test->id(),
+                'test' => $event->testClassName().'::'.$event->calledMethod()->methodName(),
                 'file' => $file,
                 'line' => $line,
                 'message' => $message,
