@@ -23,6 +23,30 @@ it('outputs json for failing tests', function (): void {
         ->and($output['failures'][0]['line'])->toBeGreaterThan(0);
 });
 
+it('outputs json for failures in a beforeClass hook', function (): void {
+    $output = decodeOutput(runWith('phpunit', 'BeforeClassHookTest'));
+
+    expect($output['result'])->toBe('failed')
+        ->and($output['failed'])->toBe(1)
+        ->and($output['failures'])->toHaveCount(1)
+        ->and($output['failures'][0]['test'])->toEndWith('BeforeClassHookTest::setUpBeforeClass')
+        ->and($output['failures'][0]['file'])->toEndWith('BeforeClassHookTest.php')
+        ->and($output['failures'][0]['line'])->toBeGreaterThan(0)
+        ->and($output['failures'][0]['message'])->toContain('Failure inside the beforeClass hook');
+});
+
+it('outputs json for failures in an afterClass hook', function (): void {
+    $output = decodeOutput(runWith('phpunit', 'AfterClassHookTest'));
+
+    expect($output['result'])->toBe('failed')
+        ->and($output['failed'])->toBe(1)
+        ->and($output['failures'])->toHaveCount(1)
+        ->and($output['failures'][0]['test'])->toEndWith('AfterClassHookTest::tearDownAfterClass')
+        ->and($output['failures'][0]['file'])->toEndWith('AfterClassHookTest.php')
+        ->and($output['failures'][0]['line'])->toBeGreaterThan(0)
+        ->and($output['failures'][0]['message'])->toContain('Failure inside the afterClass hook');
+});
+
 it('outputs json for errored tests', function (): void {
     $output = decodeOutput(runWith('phpunit', 'ErrorTest'));
 
