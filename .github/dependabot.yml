@@ -10,5 +10,3 @@ updates:
       github-actions:
         patterns:
           - "*"
-
-# auto-merge test trigger
