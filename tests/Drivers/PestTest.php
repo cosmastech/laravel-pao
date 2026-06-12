@@ -138,3 +138,10 @@ it('outputs json when PAO_FORCE is set without an agent', function (): void {
     expect($output['result'])->toBe('passed')
         ->and($output['tests'])->toBe(2);
 });
+
+it('outputs normal pest output when PAO_FORCE is falsy without an agent', function (string $value): void {
+    $process = runWith('pest', 'PassingTest', withAgent: false, extraEnv: ['PAO_FORCE' => $value]);
+
+    expect($process->getOutput())->not->toContain('"result"')
+        ->and($process->getOutput())->toContain('passed');
+})->with(['0', 'false']);
