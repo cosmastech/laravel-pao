@@ -44,7 +44,7 @@ final class Execution
             throw new ShouldNotHappenException;
         }
 
-        $binary = basename($argv[0] ?? '');
+        $binary = self::binaryName($argv[0] ?? '');
 
         $starter = match ($binary) {
             'paratest' => new Drivers\Paratest\Starter,
@@ -69,6 +69,19 @@ final class Execution
     public static function running(): bool
     {
         return self::$instance instanceof Execution;
+    }
+
+    private static function binaryName(string $path): string
+    {
+        $binary = basename(str_replace('\\', '/', $path));
+
+        foreach (['.bat', '.cmd', '.exe'] as $extension) {
+            if (str_ends_with($binary, $extension)) {
+                return substr($binary, 0, -strlen($extension));
+            }
+        }
+
+        return $binary;
     }
 
     public static function current(): self
