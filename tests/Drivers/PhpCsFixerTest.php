@@ -2,6 +2,12 @@
 
 declare(strict_types=1);
 
+beforeEach(function (): void {
+    if (PHP_OS_FAMILY === 'Windows') {
+        $this->markTestSkipped('Symfony Console reopens php://stdout on Windows, bypassing PAO stream filters.');
+    }
+});
+
 function copyPhpCsFixerFixture(): string
 {
     $source = dirname(__DIR__).'/Fixtures/PhpCsFixer/changes';
