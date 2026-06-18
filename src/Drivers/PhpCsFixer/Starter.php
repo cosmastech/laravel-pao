@@ -21,16 +21,16 @@ final class Starter extends BaseStarter
 
     public function name(): string
     {
-        return 'php-cs-fixer';
+        return "php-cs-fixer";
     }
 
     public function start(): void
     {
         /** @var array<int, string> $argv */
-        $argv = $_SERVER['argv'];
+        $argv = $_SERVER["argv"];
         $this->argv = $argv;
 
-        if (! $this->supportsCommand($argv)) {
+        if (!$this->supportsCommand($argv)) {
             return;
         }
 
@@ -41,8 +41,8 @@ final class Starter extends BaseStarter
         $argv = $this->ensureNoProgress($argv);
         $argv = $this->ensureVerbose($argv);
 
-        $_SERVER['argv'] = $argv;
-        $GLOBALS['argv'] = $argv;
+        $_SERVER["argv"] = $argv;
+        $GLOBALS["argv"] = $argv;
         $this->argv = $argv;
 
         $this->silenceStdout();
@@ -57,11 +57,11 @@ final class Starter extends BaseStarter
 
         CaptureFilter::reset();
 
-        if ($captured === '') {
+        if ($captured === "") {
             return null;
         }
 
-        $start = strpos($captured, '{');
+        $start = strpos($captured, "{");
 
         if ($start !== false && $start > 0) {
             $captured = substr($captured, $start);
@@ -70,22 +70,23 @@ final class Starter extends BaseStarter
         /** @var array<string, mixed>|null $data */
         $data = json_decode($captured, associative: true);
 
-        if (! is_array($data) || ! is_array($data['files'] ?? null)) {
+        if (!is_array($data) || !is_array($data["files"] ?? null)) {
             return [
-                'result' => 'failed',
-                'raw' => [$captured],
+                "result" => "failed",
+                "raw" => [$captured],
             ];
         }
 
-        $files = $this->files($data['files']);
+        $files = $this->files($data["files"]);
 
         /** @var array<string, mixed> $result */
         $result = [
-            'result' => $files !== [] && $this->isCheckMode() ? 'failed' : 'passed',
+            "result" =>
+                $files !== [] && $this->isCheckMode() ? "failed" : "passed",
         ];
 
         if ($files !== []) {
-            $result['files'] = $files;
+            $result["files"] = $files;
         }
 
         return $result;
@@ -98,7 +99,7 @@ final class Starter extends BaseStarter
     {
         $command = $this->command($argv);
 
-        return $command === null || in_array($command, ['check', 'fix'], true);
+        return $command === null || in_array($command, ["check", "fix"], true);
     }
 
     /**
@@ -115,7 +116,7 @@ final class Starter extends BaseStarter
                 continue;
             }
 
-            if ($arg === '--') {
+            if ($arg === "--") {
                 return null;
             }
 
@@ -125,7 +126,7 @@ final class Starter extends BaseStarter
                 continue;
             }
 
-            if (str_starts_with($arg, '-')) {
+            if (str_starts_with($arg, "-")) {
                 continue;
             }
 
@@ -137,17 +138,21 @@ final class Starter extends BaseStarter
 
     private function optionRequiresValue(string $arg): bool
     {
-        return in_array($arg, [
-            '--allow-unsupported-php-version',
-            '--allow-risky',
-            '--cache-file',
-            '--config',
-            '--format',
-            '--path-mode',
-            '--rules',
-            '--show-progress',
-            '--using-cache',
-        ], true);
+        return in_array(
+            $arg,
+            [
+                "--allow-unsupported-php-version",
+                "--allow-risky",
+                "--cache-file",
+                "--config",
+                "--format",
+                "--path-mode",
+                "--rules",
+                "--show-progress",
+                "--using-cache",
+            ],
+            true,
+        );
     }
 
     /**
@@ -166,11 +171,11 @@ final class Starter extends BaseStarter
                 continue;
             }
 
-            if (str_starts_with($arg, '--format=')) {
+            if (str_starts_with($arg, "--format=")) {
                 continue;
             }
 
-            if ($arg === '--format') {
+            if ($arg === "--format") {
                 $skipNext = true;
 
                 continue;
@@ -179,7 +184,7 @@ final class Starter extends BaseStarter
             $filtered[] = $arg;
         }
 
-        $filtered[] = '--format=json';
+        $filtered[] = "--format=json";
 
         return $filtered;
     }
@@ -200,11 +205,11 @@ final class Starter extends BaseStarter
                 continue;
             }
 
-            if (str_starts_with($arg, '--show-progress=')) {
+            if (str_starts_with($arg, "--show-progress=")) {
                 continue;
             }
 
-            if ($arg === '--show-progress') {
+            if ($arg === "--show-progress") {
                 $skipNext = true;
 
                 continue;
@@ -213,7 +218,7 @@ final class Starter extends BaseStarter
             $filtered[] = $arg;
         }
 
-        $filtered[] = '--show-progress=none';
+        $filtered[] = "--show-progress=none";
 
         return $filtered;
     }
@@ -228,19 +233,19 @@ final class Starter extends BaseStarter
         $verbose = false;
 
         foreach ($argv as $arg) {
-            if (in_array($arg, ['--quiet', '-q'], true)) {
+            if (in_array($arg, ["--quiet", "-q"], true)) {
                 continue;
             }
 
-            if (in_array($arg, ['--verbose', '-v', '-vv', '-vvv'], true)) {
+            if (in_array($arg, ["--verbose", "-v", "-vv", "-vvv"], true)) {
                 $verbose = true;
             }
 
             $filtered[] = $arg;
         }
 
-        if (! $verbose) {
-            $filtered[] = '-v';
+        if (!$verbose) {
+            $filtered[] = "-v";
         }
 
         return $filtered;
@@ -248,15 +253,15 @@ final class Starter extends BaseStarter
 
     private function isCheckMode(): bool
     {
-        if ($this->command($this->argv) === 'check') {
+        if ($this->command($this->argv) === "check") {
             return true;
         }
 
-        if (in_array('--dry-run', $this->argv, true)) {
+        if (in_array("--dry-run", $this->argv, true)) {
             return true;
         }
 
-        return in_array('-n', $this->argv, true);
+        return in_array("-n", $this->argv, true);
     }
 
     /**
@@ -264,33 +269,33 @@ final class Starter extends BaseStarter
      */
     private function files(mixed $files): array
     {
-        if (! is_array($files)) {
+        if (!is_array($files)) {
             return [];
         }
 
         $result = [];
 
         foreach ($files as $file) {
-            if (! is_array($file)) {
+            if (!is_array($file)) {
                 continue;
             }
 
-            if (! is_string($file['name'] ?? null)) {
+            if (!is_string($file["name"] ?? null)) {
                 continue;
             }
 
-            if ($file['name'] === '') {
+            if ($file["name"] === "") {
                 continue;
             }
 
             $entry = [
-                'path' => $file['name'],
+                "path" => $file["name"],
             ];
 
-            $fixers = $this->fixers($file['appliedFixers'] ?? null);
+            $fixers = $this->fixers($file["appliedFixers"] ?? null);
 
             if ($fixers !== []) {
-                $entry['fixers'] = $fixers;
+                $entry["fixers"] = $fixers;
             }
 
             $result[] = $entry;
@@ -304,13 +309,16 @@ final class Starter extends BaseStarter
      */
     private function fixers(mixed $fixers): array
     {
-        if (! is_array($fixers)) {
+        if (!is_array($fixers)) {
             return [];
         }
 
-        return array_values(array_filter(
-            $fixers,
-            fn (mixed $fixer): bool => is_string($fixer) && $fixer !== '',
-        ));
+        return array_values(
+            array_filter(
+                $fixers,
+                static fn(mixed $fixer): bool => is_string($fixer) &&
+                    $fixer !== "",
+            ),
+        );
     }
 }
