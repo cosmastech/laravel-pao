@@ -125,10 +125,6 @@ final class Starter extends BaseStarter
                 continue;
             }
 
-            if ($this->isBinaryArgument($arg)) {
-                continue;
-            }
-
             if (str_starts_with($arg, '-')) {
                 continue;
             }
@@ -137,21 +133,6 @@ final class Starter extends BaseStarter
         }
 
         return null;
-    }
-
-    private function isBinaryArgument(string $arg): bool
-    {
-        $binary = basename(str_replace('\\', '/', $arg));
-
-        foreach (['.bat', '.cmd', '.exe'] as $extension) {
-            if (str_ends_with($binary, $extension)) {
-                $binary = substr($binary, 0, -strlen($extension));
-
-                break;
-            }
-        }
-
-        return in_array($binary, ['php-cs-fixer', 'php-cs-fixer.phar'], true);
     }
 
     private function optionRequiresValue(string $arg): bool
