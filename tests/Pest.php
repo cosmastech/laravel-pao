@@ -70,18 +70,25 @@ function runPhpstan(string $configPath, bool $withAgent = true, array $extraArgs
 
 function runRector(string $configPath, bool $withAgent = true, array $extraArgs = []): Process
 {
-    $env = [
-        'AI_AGENT' => $withAgent ? '1' : false,
-        'CLAUDECODE' => false,
-        'CLAUDE_CODE' => false,
-    ];
-
     $command = [PHP_BINARY, 'vendor/bin/rector', 'process', '--config', $configPath, ...$extraArgs];
 
     $process = new Process(
         command: $command,
         cwd: dirname(__DIR__),
-        env: $env,
+        env: buildAgentEnvironment($withAgent),
+    );
+
+    $process->run();
+
+    return $process;
+}
+
+function runPhpCsFixer(string $configPath, string $command = 'check', bool $withAgent = true, array $extraArgs = []): Process
+{
+    $process = new Process(
+        command: [PHP_BINARY, 'vendor/bin/php-cs-fixer', $command, '--config', $configPath, ...$extraArgs],
+        cwd: dirname(__DIR__),
+        env: buildAgentEnvironment($withAgent),
     );
 
     $process->run();

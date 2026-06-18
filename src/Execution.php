@@ -49,6 +49,7 @@ final class Execution
         $starter = match ($binary) {
             'paratest' => new Drivers\Paratest\Starter,
             'pest' => new Drivers\Pest\Starter,
+            'php-cs-fixer', 'php-cs-fixer.phar' => new Drivers\PhpCsFixer\Starter,
             'phpstan', 'phpstan.phar' => new Drivers\Phpstan\Starter,
             'phpunit' => new Drivers\Phpunit\Starter,
             'rector' => new Drivers\Rector\Starter,

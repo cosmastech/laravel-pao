@@ -10,19 +10,19 @@
 
 ## Introduction
 
-**Laravel PAO** is agent-optimized output for PHP tools. It works with any PHP project — **Laravel**, **Symfony**, **Laminas**, **vanilla PHP**, or anything else that uses **PHPUnit**, **Pest**, **Paratest**, **PHPStan**, **Rector**, or **Laravel Artisan**.
+**Laravel PAO** is agent-optimized output for PHP tools. It works with any PHP project — **Laravel**, **Symfony**, **Laminas**, **vanilla PHP**, or anything else that uses **PHPUnit**, **Pest**, **Paratest**, **PHPStan**, **Rector**, **PHP-CS-Fixer**, or **Laravel Artisan**.
 
 It detects when your tools are running inside an AI agent — **Claude Code**, **Cursor**, **Devin**, **Gemini CLI**, and others — and replaces the verbose, human-readable output with compact, super minimal, structured JSON. For Laravel Artisan commands, it strips ANSI colors, box-drawing characters, and excess whitespace. Zero config — just install and it works.
 
 ## Installation
 
-> **Requires [PHP 8.3+](https://php.net/releases/)** — Works with **PHPUnit 12-13**, **Pest 4-5**, **Paratest**, **PHPStan**, **Rector**, and **Laravel 12+**.
+> **Requires [PHP 8.3+](https://php.net/releases/)** — Works with **PHPUnit 12-13**, **Pest 4-5**, **Paratest**, **PHPStan**, **Rector**, **PHP-CS-Fixer**, and **Laravel 12+**.
 
 ```bash
 composer require laravel/pao --dev
 ```
 
-That's it. PAO hooks into PHPUnit, Pest, Paratest, PHPStan, and Rector automatically through Composer's autoloader. For Laravel projects, a service provider is auto-discovered to clean Artisan command output.
+That's it. PAO hooks into PHPUnit, Pest, Paratest, PHPStan, Rector, and PHP-CS-Fixer automatically through Composer's autoloader. For Laravel projects, a service provider is auto-discovered to clean Artisan command output.
 
 > **PAO only activates when it detects an AI agent** (Claude Code, Cursor, Devin, Gemini CLI, etc.). When you or your team run tools directly in the terminal, the output is completely unchanged — same colors, same formatting, same experience. Zero impact on human workflows.
 
@@ -145,6 +145,25 @@ Rector is automatically run with its native JSON output format:
   ],
   "changed_files": [
     "app/Models/User.php"
+  ]
+}
+```
+
+### PHP-CS-Fixer
+
+PHP-CS-Fixer output is also converted to compact JSON:
+
+```json
+{
+  "tool": "php-cs-fixer",
+  "result": "failed",
+  "files": [
+    {
+      "path": "app/Models/User.php",
+      "fixers": [
+        "single_quote"
+      ]
+    }
   ]
 }
 ```

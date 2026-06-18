@@ -7,6 +7,7 @@
         "phpunit",
         "pest",
         "paratest",
+        "php-cs-fixer",
         "phpstan",
         "rector",
         "agent",
@@ -30,6 +31,7 @@
     },
     "require-dev": {
         "brianium/paratest": "^7.20.0",
+        "friendsofphp/php-cs-fixer": "^3.95",
         "laravel/pint": "^1.29.1",
         "orchestra/testbench": "^10.11.0 || ^11.1.0",
         "pestphp/pest": "^4.7.2 || ^5.0.0",
