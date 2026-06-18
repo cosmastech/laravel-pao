@@ -36,6 +36,7 @@ final class Starter extends BaseStarter
 
         $this->registerNullFilter();
         $this->silenceStderr();
+        $this->preventXdebugRestart();
 
         $argv = $this->ensureFormatJson($argv);
         $argv = $this->ensureNoProgress($argv);
@@ -257,6 +258,13 @@ final class Starter extends BaseStarter
         }
 
         return in_array('-n', $this->argv, true);
+    }
+
+    private function preventXdebugRestart(): void
+    {
+        putenv('PHP_CS_FIXER_ALLOW_XDEBUG=1');
+
+        $_SERVER['PHP_CS_FIXER_ALLOW_XDEBUG'] = '1';
     }
 
     /**
